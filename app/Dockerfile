@@ -11,4 +11,4 @@ RUN pip install pytest pytest-asyncio httpx sqlalchemy coverage pytest-cov
 
 COPY . .
 
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["python", "main.py"]

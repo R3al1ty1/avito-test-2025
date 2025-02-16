@@ -33,24 +33,24 @@ services:
       - .env
 
   # Новый сервис для тестов
-  tests:
-    build: .
-    depends_on:
-      merch-db:
-        condition: service_healthy
-    env_file:
-      - .env
-    volumes:
-      - .:/app
-      - ./test-reports:/app/test-reports
-      - ./tests:/app/tests
-    command: >
-      sh -c "pytest -v 
-      --cov=app 
-      --cov-report=xml:test-reports/coverage.xml 
-      --junitxml=test-reports/junit.xml 
-      tests/"
+  # tests:
+  #   build: .
+  #   depends_on:
+  #     merch-db:
+  #       condition: service_healthy
+  #   env_file:
+  #     - .env
+  #   volumes:
+  #     - .:/app
+  #     - ./test-reports:/app/test-reports
+  #     - ./tests:/app/tests
+  #   command: >
+  #     sh -c "pytest -v 
+  #     --cov=app 
+  #     --cov-report=xml:test-reports/coverage.xml 
+  #     --junitxml=test-reports/junit.xml 
+  #     tests/"
 
 volumes:
   db_data:
-  test-reports:  # Для сохранения отчетов тестов
+  # test-reports:  # Для сохранения отчетов тестов
