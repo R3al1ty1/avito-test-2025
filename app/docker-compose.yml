@@ -1,0 +1,56 @@
+version: '3.8'
+
+services:
+  merch-db:
+    image: postgres:latest
+    container_name: merch-db
+    environment:
+      POSTGRES_USER: ${CONFIG__DB__POSTGRES_USER}
+      POSTGRES_PASSWORD: ${CONFIG__DB__POSTGRES_PASSWORD}
+      POSTGRES_DB: ${CONFIG__DB__POSTGRES_DB}
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    env_file:
+      - .env
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  merch-backend:
+    build: .
+    container_name: merch-shop
+    ports:
+      - "8000:8000"
+    depends_on:
+      merch-db:
+        condition: service_healthy
+    env_file:
+      - .env
+
+  # Новый сервис для тестов
+  tests:
+    build: .
+    depends_on:
+      merch-db:
+        condition: service_healthy
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+      - ./test-reports:/app/test-reports
+      - ./tests:/app/tests
+    command: >
+      sh -c "pytest -v 
+      --cov=app 
+      --cov-report=xml:test-reports/coverage.xml 
+      --junitxml=test-reports/junit.xml 
+      tests/"
+
+volumes:
+  db_data:
+  test-reports:  # Для сохранения отчетов тестов
